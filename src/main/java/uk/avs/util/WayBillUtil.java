@@ -7,14 +7,28 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+import abstractions.ExchangeView;
+
 public class WayBillUtil {
     public static byte[] saveWayBillToBytes(WeighingView input) {
+        ExchangeView  exchangeView = new ExchangeView();
+        exchangeView.brutto = input.getBrutto();
+        exchangeView.clogging = input.getClogging();
+        exchangeView.comment = input.getComment();
+        exchangeView.complete = input.getComplete();
+        exchangeView.dateCreate = input.getDateCreate();
+        exchangeView.metal = String.valueOf(input.getMetal().toString());
+        exchangeView.mode = input.getMode();
+        exchangeView.netto = input.getNetto();
+        exchangeView.sum = input.getSum();
+        exchangeView.tare = input.getTare();
+        exchangeView.timeCreate = input.getTimeCreate();        
         byte[] Result=null ;
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ObjectOutput out = null;
         try {
             out = new ObjectOutputStream(bos);
-            out.writeObject(input);
+            out.writeObject(exchangeView);
             out.flush();
             Result = bos.toByteArray();
         } catch (IOException e) {
@@ -29,7 +43,11 @@ public class WayBillUtil {
         return Result;
     }
 
-    public static WeighingView restoreBytesToWayBill(String input) throws IOException {
+
+
+
+
+    public static ExchangeView restoreBytesToWayBill(String input) throws IOException {
         Object o=null;
         ByteArrayInputStream bis = new ByteArrayInputStream(Files.readAllBytes(Paths.get(new File(input).getPath())));
         ObjectInput in = null;
@@ -49,7 +67,7 @@ public class WayBillUtil {
 
             }
         }
-        return (WeighingView) o;
+        return (ExchangeView) o;
     }
 
     public static WeighingView restoreBytesToWayBill(byte[] input){
@@ -75,13 +93,13 @@ public class WayBillUtil {
         return (WeighingView) o;
     }
 
-    public static Object[][] dataFromObject(WeighingView input){
+    public static Object[][] dataFromObject(ExchangeView input){
         Object[][] result = new Object[1][13];
         result[0][0] = input.getDateCreate();
         result[0][1] = input.getTimeCreate();
         result[0][2] = input.getWaybill();
         result[0][3] = input.getComment();
-        result[0][4] = input.getMetal().getName();
+        result[0][4] = input.getMetal();
         result[0][5] = input.getBrutto();
         result[0][6] = input.getTare();
         result[0][7] = input.getClogging();   //засор

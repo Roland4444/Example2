@@ -3,6 +3,7 @@ package uk.avs;
 
 import Message.abstractions.BinaryMessage;
 import abstractions.Cypher;
+import abstractions.ExchangeView;
 import abstractions.RequestMessage;
 import ch.roland.ModuleGUI;
 import uk.avs.util.*;
@@ -25,7 +26,6 @@ import java.util.concurrent.CompletionException;
 import static javax.swing.JOptionPane.showMessageDialog;
 
 public class Example2 extends ModuleGUI {
-    WeighingView restored;
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
@@ -57,7 +57,7 @@ public class Example2 extends ModuleGUI {
     public JButton SaveChanges;
     public JButton EditButton;
     public Box contents;
-
+    ExchangeView restored;
     public JPanel MainPanel;
     public JPanel ButtonPanel;
     public JLabel lPosition;
@@ -309,7 +309,7 @@ public class Example2 extends ModuleGUI {
                 for (int i = 0; i <= 12; i++) {
                     bf.append("Position #" + i + "data:: " + PositionTable.getModel().getValueAt(0, i) + "\n");
                 }
-                WeighingView restored = null;
+                restored = null;
                 try {
                     restored = WayBillUtil.restoreBytesToWayBill(FileNameDump);
                 } catch (IOException exception) {
@@ -331,7 +331,7 @@ public class Example2 extends ModuleGUI {
                 data.add(restored.getClogging());
                 data.add(restored.getTrash());
                 data.add(restored.getTare());
-                data.add(restored.getMetal().getName());
+                data.add(restored.getMetal());
                 try {
                     editor.preperaGUI();
                     editor.pasteData();
@@ -358,7 +358,7 @@ public class Example2 extends ModuleGUI {
         createinitialrequest = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent f) {
-                WeighingView restored = null;
+                restored = null;
                 try {
                     restored = WayBillUtil.restoreBytesToWayBill(FileNameDump);
                 } catch (IOException e) {
