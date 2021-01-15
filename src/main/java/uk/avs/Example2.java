@@ -6,12 +6,11 @@ import abstractions.Cypher;
 import abstractions.ExchangeView;
 import abstractions.RequestMessage;
 import ch.roland.ModuleGUI;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
 import uk.avs.util.*;
 import uk.avs.util.readfile.Readfile;
-import uk.avs.view.WeighingView;
-
 import javax.swing.*;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -29,7 +28,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.0.77";
+    public final String version = "0.X.92";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -47,7 +46,8 @@ public class Example2 extends ModuleGUI {
     public String checkaction_shortcut = "control Z";
     public String createandsendfatbundle = "createfatbundle";
     public String createfatbundle_shortcut = "control R";
-    public final String FileNameDump  = "waybill.bin";
+  ///  public final String FileNameDump  = "waybill.bin";
+    public final String FileNameDumpJSON  = "waybill.json";
     public String savechanges = "saveChanges";
     public String savechanges_shortcut = "control S";
     public JPanel DescriptionPanel;
@@ -57,7 +57,8 @@ public class Example2 extends ModuleGUI {
     public JButton SaveChanges;
     public JButton EditButton;
     public Box contents;
-    ExchangeView restored;
+  //  ExchangeView restored;
+    public JSONObject restored;
     public JPanel MainPanel;
     public JPanel ButtonPanel;
     public JLabel lPosition;
@@ -101,7 +102,7 @@ public class Example2 extends ModuleGUI {
     }
 
     public void cleanup(){
-        Utils.safeDelete(FileNameDump);
+        Utils.safeDelete(FileNameDumpJSON);
         Utils.safeDelete(approve_lock);
         Utils.safeDelete(req_lock);
         Utils.safeDelete(wait_lock);
@@ -109,7 +110,7 @@ public class Example2 extends ModuleGUI {
     }
 
     public boolean checkInitialRequest(){
-        return new File(FileNameDump).exists();
+        return new File(FileNameDumpJSON).exists();
     };
 
     public boolean checkHaveResponce(){
@@ -120,16 +121,19 @@ public class Example2 extends ModuleGUI {
         return new File(wait_lock).exists();
     }
 
-    public void initComponents() throws IOException {
+    public void initComponents() throws IOException, ParseException {
         defaultmetals();
+        System.out.println("Metals passed!");
         jsonizer = new JSONizer();
         readfile = new Readfile("setts.ini");
         urlServer = readfile.readField("urlServer");
         frame = new JFrame("АВС помошник. Версия "+version);
+        System.out.println("JFRAME passed!");
+           // restored = WayBillUtil.restoreBytesToWayBill(FileNameDump);
+        restored = WayBillUtil.restoreJSON(FileNameDumpJSON);
+        System.out.println("Restore JSON passed!");
 
-            restored = WayBillUtil.restoreBytesToWayBill(FileNameDump);
-
-        ID = restored.getDateCreate().toString() + restored.getTimeCreate().toString() + restored.getComment();
+        ID = restored.get("Date").toString() + restored.get("Time").toString() + restored.get("Comment").toString();
         PositionTable = new JTable(WayBillUtil.dataFromObject(restored), columnsHeaderAVS);
 
         contents = new Box(BoxLayout.Y_AXIS);
@@ -165,7 +169,7 @@ public class Example2 extends ModuleGUI {
 
     }
 
-    public Example2() throws IOException, InterruptedException {
+    public Example2() throws IOException, InterruptedException, ParseException {
 
         if (new File(applock).exists()){}
         initComponents();
@@ -260,6 +264,7 @@ public class Example2 extends ModuleGUI {
         System.out.println("Description::=>" + DescriptionText.getText());
         //    JOptionPane.showMessageDialog(null, "Сохраняю измнения");
         ArrayList data = new ArrayList();
+        showMessageDialog(null, "Save Changes!!");
         PositionTable.updateUI();
         for (int i = 0; i <= 12; i++) {
             System.out.println(i + "index@Value::" + PositionTable.getModel().getValueAt(0, i));
@@ -287,7 +292,7 @@ public class Example2 extends ModuleGUI {
         Utils.safeDelete(approve_lock);
         Utils.safeDelete(req_lock);
         Utils.safeDelete(applock);
-        Utils.safeDelete(FileNameDump);
+        Utils.safeDelete(FileNameDumpJSON);
         Utils.safeDelete(wait_lock);
         akt.terminate();
         frame.dispose();
@@ -311,11 +316,11 @@ public class Example2 extends ModuleGUI {
                 }
                 restored = null;
                 try {
-                    restored = WayBillUtil.restoreBytesToWayBill(FileNameDump);
-                } catch (IOException exception) {
+                    restored = WayBillUtil.restoreJSON(FileNameDumpJSON);
+                } catch (IOException | ParseException exception) {
                     exception.printStackTrace();
                 }
-                Editor editor = new Editor(String.valueOf(restored.getWaybill()), restored.getDateCreate().toString(), metals, SaveChanges);
+                Editor editor = new Editor(String.valueOf(restored.get("Waybill_number")), restored.get("Date").toString(), metals, SaveChanges);
                 editor.positiontable = PositionTable;
                 editor.callback = new Callback() {
                     @Override
@@ -325,13 +330,13 @@ public class Example2 extends ModuleGUI {
                 };
                 ArrayList data = new ArrayList<>();
                 editor.inputdata = data;
-                data.add(restored.getComment());
-                data.add(restored.getBrutto());
-                data.add(restored.getNetto());
-                data.add(restored.getClogging());
-                data.add(restored.getTrash());
-                data.add(restored.getTare());
-                data.add(restored.getMetal());
+                data.add(restored.get("Comment"));
+                data.add(restored.get("Brutto"));
+                data.add(restored.get("Netto"));
+                data.add(restored.get("Clogging"));
+                data.add(restored.get("Trash"));
+                data.add(restored.get("Tara"));
+                data.add(restored.get("Metall"));
                 try {
                     editor.preperaGUI();
                     editor.pasteData();
@@ -360,8 +365,8 @@ public class Example2 extends ModuleGUI {
             public void actionPerformed(ActionEvent f) {
                 restored = null;
                 try {
-                    restored = WayBillUtil.restoreBytesToWayBill(FileNameDump);
-                } catch (IOException e) {
+                    restored = WayBillUtil.restoreJSON(FileNameDumpJSON);
+                } catch (IOException | ParseException e) {
                     e.printStackTrace();
                 }
                 System.out.println("Description::=>" + DescriptionText.getText());
@@ -369,6 +374,7 @@ public class Example2 extends ModuleGUI {
                 System.out.println("\n\n\nJSON to send::" + req.JSONed);
                 req.Description = DescriptionText.getText();
                 req.type = RequestMessage.Type.request;
+                showMessageDialog(null, "TRY SEND" );
                 try {
                     req.addressToReply = akt.getURL_thisAktor();
                 } catch (UnknownHostException e) {
@@ -458,7 +464,7 @@ public class Example2 extends ModuleGUI {
 
     }
 
-    public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, InterruptedException, IOException {
+    public static void main(String[] args) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException, InterruptedException, IOException, ParseException {
         Example2 ex = new Example2();
         ex.prepareAktor();
         ex.preperaGUI();
