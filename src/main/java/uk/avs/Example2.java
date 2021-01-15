@@ -3,7 +3,6 @@ package uk.avs;
 
 import Message.abstractions.BinaryMessage;
 import abstractions.Cypher;
-import abstractions.ExchangeView;
 import abstractions.RequestMessage;
 import ch.roland.ModuleGUI;
 import org.json.simple.JSONObject;
