@@ -1,12 +1,11 @@
 package uk.avs;
-
-
 import Message.abstractions.BinaryMessage;
 import abstractions.Cypher;
 import abstractions.RequestMessage;
 import ch.roland.ModuleGUI;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+import uk.avs.Container.State;
 import uk.avs.util.*;
 import uk.avs.util.readfile.Readfile;
 import javax.swing.*;
@@ -27,7 +26,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.E.97";
+    public final String version = "0.E.100";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -47,6 +46,7 @@ public class Example2 extends ModuleGUI {
     public String createfatbundle_shortcut = "control R";
   ///  public final String FileNameDump  = "waybill.bin";
     public final String FileNameDumpJSON  = "waybill.json";
+    public final String FileBin  = "req.bin";
     public String savechanges = "saveChanges";
     public String savechanges_shortcut = "control S";
     public JPanel DescriptionPanel;
@@ -99,6 +99,8 @@ public class Example2 extends ModuleGUI {
         metals.add("Бабит 83%");
         metals.add("Бронза");
     }
+
+
 
     public void cleanup(){
         Utils.safeDelete(FileNameDumpJSON);
