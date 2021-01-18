@@ -199,7 +199,7 @@ public class Example2 extends ModuleGUI {
 
         ButtonPanel.setLayout(experimentLayout);
         ButtonPanel.add(RequestHelp);
-        ButtonPanel.add(Cancel);
+        //ButtonPanel.add(Cancel);
         ButtonPanel.add(SaveChanges);
         ButtonPanel.add(EditButton);
         SaveChanges.setVisible(false);
