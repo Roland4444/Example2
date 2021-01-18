@@ -27,7 +27,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.X.92";
+    public final String version = "0.R.93";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -287,7 +287,7 @@ public class Example2 extends ModuleGUI {
     };
 
     public void cleanAndexit(){
-        showMessageDialog(null, "Try exit");
+      //  showMessageDialog(null, "Try exit");
         Utils.safeDelete(approve_lock);
         Utils.safeDelete(req_lock);
         Utils.safeDelete(applock);
@@ -373,7 +373,7 @@ public class Example2 extends ModuleGUI {
                 System.out.println("\n\n\nJSON to send::" + req.JSONed);
                 req.Description = DescriptionText.getText();
                 req.type = RequestMessage.Type.request;
-                showMessageDialog(null, "TRY SEND" );
+             //   showMessageDialog(null, "TRY SEND" );
                 try {
                     req.addressToReply = akt.getURL_thisAktor();
                 } catch (UnknownHostException e) {
@@ -425,11 +425,11 @@ public class Example2 extends ModuleGUI {
         FileOutputStream fos = new FileOutputStream(decline_lock);
         fos.write("schon".getBytes());
         fos.close();
+        cleanup();
         showMessageDialog(null, "редактирование запрещено");
         //new ThreadAlertApprove().start();
         checker.interrupt();
         checker.stop();
-        cleanup();
         //new ThreadAlertDecline().start();
     }
 
