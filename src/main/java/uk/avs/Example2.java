@@ -13,9 +13,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.concurrent.CompletionException;
@@ -26,7 +24,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.E.100";
+    public final String version = "0.E.101";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -72,8 +70,20 @@ public class Example2 extends ModuleGUI {
     FlowLayout experimentLayout;
     public Object[] columnsHeaderAVS = new String[]{"Дата", "Время", "Накладная №", "Комментарий", "Металл", "Брутто", "Тара", "Засор", "Примеси", "Нетто", "Режим", "Завершено", "Состояние"};
 
-    public void defaultmetals(){
+    public void defaultmetals() throws IOException {
         metals = new ArrayList();
+        String line;
+
+
+            BufferedReader bufferreader = new BufferedReader(new FileReader("metals"));
+
+
+            while ((line = bufferreader.readLine()) != null) {
+                metals.add(line);
+
+            }
+
+       /*
         metals.add("12А");
         metals.add("14А");
         metals.add("16А");
@@ -98,6 +108,8 @@ public class Example2 extends ModuleGUI {
         metals.add("Бабит 70%");
         metals.add("Бабит 83%");
         metals.add("Бронза");
+        */
+
     }
 
 
