@@ -27,7 +27,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.R.95";
+    public final String version = "0.E.97";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -199,7 +199,7 @@ public class Example2 extends ModuleGUI {
 
         ButtonPanel.setLayout(experimentLayout);
         ButtonPanel.add(RequestHelp);
-        //ButtonPanel.add(Cancel);
+        ButtonPanel.add(Cancel);
         ButtonPanel.add(SaveChanges);
         ButtonPanel.add(EditButton);
         SaveChanges.setVisible(false);
@@ -288,8 +288,12 @@ public class Example2 extends ModuleGUI {
 
     public void cleanAndexit(){
       //  showMessageDialog(null, "Try exit");
+        if (new File(wait_lock).exists()){
+            showMessageDialog(null, "Запрос отправлен, отмена невозможна");
+            return;
+        }
         Utils.safeDelete(approve_lock);
-        Utils.safeDelete(req_lock);
+       // Utils.safeDelete(req_lock);
         Utils.safeDelete(applock);
         Utils.safeDelete(FileNameDumpJSON);
         Utils.safeDelete(wait_lock);
