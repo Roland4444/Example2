@@ -27,7 +27,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.R.93";
+    public final String version = "0.R.95";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -263,7 +263,7 @@ public class Example2 extends ModuleGUI {
         System.out.println("Description::=>" + DescriptionText.getText());
         //    JOptionPane.showMessageDialog(null, "Сохраняю измнения");
         ArrayList data = new ArrayList();
-        showMessageDialog(null, "Save Changes!!");
+        ////showMessageDialog(null, "Save Changes!!");
         PositionTable.updateUI();
         for (int i = 0; i <= 12; i++) {
             System.out.println(i + "index@Value::" + PositionTable.getModel().getValueAt(0, i));

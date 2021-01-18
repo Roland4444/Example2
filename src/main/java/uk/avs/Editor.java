@@ -241,7 +241,7 @@ public class Editor extends ModuleGUI {
         positiontable.setValueAt(Trash.getText(), 0, 8);
         positiontable.setValueAt(Netto.getText(), 0, 9);
         positiontable.updateUI();
-        JOptionPane.showMessageDialog(null, "Сохраняю измнения");
+        JOptionPane.showMessageDialog(null, "Сохраняю изменения");
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
         callback.call();
     }
