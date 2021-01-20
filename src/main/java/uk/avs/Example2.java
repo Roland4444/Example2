@@ -25,7 +25,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.E.105. Production ready";
+    public final String version = "0.E.110. Production ready. + AJAX";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -241,13 +241,17 @@ public class Example2 extends ModuleGUI {
         PositionTable.setComponentPopupMenu(popupMenu);
 
         if (waitReponce()){
-            disableEdit();
-            RequestHelp.setEnabled(false);
-            System.out.println("CHECK STATUS NOW");
-            checker = new ThreadCheckStatus();
-            checker.check = checkcycle;
-            checker.start();
+            startASK();
         }
+    }
+
+    public void startASK(){
+        disableEdit();
+        RequestHelp.setEnabled(false);
+        System.out.println("CHECK STATUS NOW");
+        checker = new ThreadCheckStatus();
+        checker.check = checkcycle;
+        checker.start();
     }
 
     public void askServer() throws IOException {
@@ -425,6 +429,7 @@ public class Example2 extends ModuleGUI {
                 }
                 showMessageDialog(null, "запрос отправлен! ожидайте одобрения");
                 RequestHelp.setEnabled(false);
+                startASK();
             }
         };
         initListeners();
