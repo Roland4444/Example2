@@ -3,6 +3,7 @@ import Message.abstractions.BinaryMessage;
 import abstractions.Cypher;
 import abstractions.RequestMessage;
 import ch.roland.ModuleGUI;
+import javafx.application.Application;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 import uk.avs.Container.State;
@@ -24,7 +25,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.E.101";
+    public final String version = "0.E.105. Production ready";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -32,6 +33,7 @@ public class Example2 extends ModuleGUI {
     public final String wait_lock = "wait.lock";
     public ServerAktor akt;
     public String urlServer;
+    public String urlClient;
     AbstractAction createinitialrequest;
     AbstractAction saveChanges;
     AbstractAction editAction;
@@ -140,6 +142,13 @@ public class Example2 extends ModuleGUI {
         jsonizer = new JSONizer();
         readfile = new Readfile("setts.ini");
         urlServer = readfile.readField("urlServer");
+
+        urlClient = readfile.readField("urlClient");
+        if ((urlClient == null) || urlServer==null){
+            showMessageDialog(null, "Ошибка инициализации программы");
+            System.exit(12);
+        }
+        System.out.println(urlClient);
         frame = new JFrame("АВС помошник. Версия "+version);
         System.out.println("JFRAME passed!");
            // restored = WayBillUtil.restoreBytesToWayBill(FileNameDump);
@@ -454,7 +463,7 @@ public class Example2 extends ModuleGUI {
     public void prepareAktor() throws InterruptedException {
         akt = new ServerAktor();
         akt.editButton = EditButton;
-        akt.setAddress("http://127.0.0.1:12215/");
+        akt.setAddress(urlClient);//////////////akt.setAddress("http://127.0.0.1:12215/");
         akt.setCypher((Cypher) new CypherImpl());
         System.out.println("\n\n\n*************************\n****Spawning JAKtor******\n*************************\n\n\n\n");
 
@@ -487,7 +496,7 @@ public class Example2 extends ModuleGUI {
         ex.preperaGUI();
         ex.initActions();
 
-
+        System.out.println("URL ::>>>>"+ex.akt.getURL_thisAktor());
     }
 
 
