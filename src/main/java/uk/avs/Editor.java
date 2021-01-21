@@ -206,23 +206,34 @@ public class Editor extends ModuleGUI {
 
     public boolean checkInput(){
         if (!checker.isnumber(Brutto.getText())) {
-            errorDescription = "Брутто";
+            errorDescription = "в поле Брутто";
             return false;
         }
         if (!checker.isnumber(Tara.getText())) {
-            errorDescription = "Тара";
+            errorDescription = "в поле Тара";
             return false;
         }
         if (!checker.isnumber(Clogging.getText())) {
-            errorDescription = "Засор";
+            errorDescription = "в поле Засор";
             return false;
         }
         if (!checker.isnumber(Trash.getText())) {
-            errorDescription = "Примесь";
+            errorDescription = "в поле Примесь";
             return false;
         }
         if (!checker.isnumber(Netto.getText())) {
-            errorDescription = "Нетто";
+            errorDescription = "в поле Нетто";
+            return false;
+        }
+        float clogging = Float.parseFloat(Clogging.getText());
+        if (clogging>100){
+            errorDescription = "Засор больше 100!";
+            return false;
+        };
+        float trash = Float.parseFloat(Trash.getText());
+        float netto = Float.parseFloat(Netto.getText());
+        if (trash>=netto){
+            errorDescription = "Примесь больше или равна нетто!";
             return false;
         }
         return true;
@@ -230,7 +241,7 @@ public class Editor extends ModuleGUI {
 
     public void update(){
         if (!checkInput()) {
-            JOptionPane.showMessageDialog(null, "Проверьте ввод чисел. Ошибка в поле "+errorDescription);
+            JOptionPane.showMessageDialog(null, "Проверьте ввод чисел. Ошибка ::  "+errorDescription);
             return;
         }
         positiontable.setValueAt(Comment.getText(), 0, 3);
@@ -241,7 +252,7 @@ public class Editor extends ModuleGUI {
         positiontable.setValueAt(Trash.getText(), 0, 8);
         positiontable.setValueAt(Netto.getText(), 0, 9);
         positiontable.updateUI();
-        JOptionPane.showMessageDialog(null, "Сохраняю изменения");
+        JOptionPane.showMessageDialog(null, "Для обновления нажмите Поиск в основной программе");
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
         callback.call();
     }
