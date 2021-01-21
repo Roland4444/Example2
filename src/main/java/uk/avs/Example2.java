@@ -26,7 +26,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.R.125. Production ready. + AJAX+GUID + errors";
+    public final String version = "0.U.125. Production ready. + AJAX+GUID + errors+ UNICODE";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -325,10 +325,10 @@ public class Example2 extends ModuleGUI {
 
     public static void writeJSONtoDB(String json, String filename) throws IOException {
         FileOutputStream fos = new FileOutputStream(filename);
-        if (System.getProperty("os.name").equals("Linux"))
-            fos.write(json.getBytes());
-        else
-            fos.write(json.getBytes("windows-1251"));
+    ////    if (System.getProperty("os.name").equals("Linux"))
+            fos.write(json.getBytes("UTF-8"));
+    ///    else
+    ///        fos.write(json.getBytes("windows-1251"));
         fos.close();
     } ;
 
