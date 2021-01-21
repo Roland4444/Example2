@@ -3,10 +3,8 @@ import Message.abstractions.BinaryMessage;
 import abstractions.Cypher;
 import abstractions.RequestMessage;
 import ch.roland.ModuleGUI;
-import javafx.application.Application;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
-import uk.avs.Container.State;
 import uk.avs.util.*;
 import uk.avs.util.readfile.Readfile;
 import javax.swing.*;
@@ -16,16 +14,19 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.*;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.concurrent.CompletionException;
 
 import static javax.swing.JOptionPane.showMessageDialog;
 
 public class Example2 extends ModuleGUI {
+    public final String jsonbtoDB = "DB.json";
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.E.110. Production ready. + AJAX";
+    public final String version = "0.R.120. Production ready. + AJAX+GUID + ";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -44,6 +45,7 @@ public class Example2 extends ModuleGUI {
     public String checkaction_shortcut = "control Z";
     public String createandsendfatbundle = "createfatbundle";
     public String createfatbundle_shortcut = "control R";
+    public timeBasedUUID UUIDGen ;
   ///  public final String FileNameDump  = "waybill.bin";
     public final String FileNameDumpJSON  = "waybill.json";
     public final String FileBin  = "req.bin";
@@ -82,7 +84,6 @@ public class Example2 extends ModuleGUI {
 
             while ((line = bufferreader.readLine()) != null) {
                 metals.add(line);
-
             }
 
        /*
@@ -137,6 +138,7 @@ public class Example2 extends ModuleGUI {
     }
 
     public void initComponents() throws IOException, ParseException {
+        UUIDGen = new timeBasedUUID();
         defaultmetals();
         System.out.println("Metals passed!");
         jsonizer = new JSONizer();
@@ -155,7 +157,8 @@ public class Example2 extends ModuleGUI {
         restored = WayBillUtil.restoreJSON(FileNameDumpJSON);
         System.out.println("Restore JSON passed!");
 
-        ID = restored.get("Date").toString() + restored.get("Time").toString() + restored.get("Comment").toString();
+        ////////////ID = restored.get("Date").toString() + restored.get("Time").toString() + restored.get("Comment").toString();
+
         PositionTable = new JTable(WayBillUtil.dataFromObject(restored), columnsHeaderAVS);
 
         contents = new Box(BoxLayout.Y_AXIS);
@@ -257,8 +260,11 @@ public class Example2 extends ModuleGUI {
     public void askServer() throws IOException {
         RequestMessage req = new RequestMessage(ID, DescriptionText.getText(), null);
         req.type = RequestMessage.Type.ask;
+        String ID__ = new String(Files.readAllBytes(Paths.get(wait_lock)));
         req.addressToReply = akt.getURL_thisAktor();
+        req.ID = ID__;
         akt.send(BinaryMessage.savedToBLOB(req), urlServer);
+        System.out.println("ASK server @ GUUID=> "+ ID__);
     };
 
     public void initListeners() {
@@ -280,9 +286,9 @@ public class Example2 extends ModuleGUI {
 
     }
 
-    void createFile(String filename) throws IOException {
+    void createFile(String filename, String GUUID) throws IOException {
         FileOutputStream fos = new FileOutputStream(filename);
-        fos.write("".getBytes());
+        fos.write(GUUID.getBytes());
         fos.close();
     }
 
@@ -307,11 +313,21 @@ public class Example2 extends ModuleGUI {
             akt.send(BinaryMessage.savedToBLOB(req), urlServer);
             cleanup();
             showMessageDialog(null, "Транзакция завершена");
+            Example2.writeJSONtoDB( jsonizer.JSONedRestored(data), jsonbtoDB);
             //    akt.terminate();
         } catch (IOException ioException) {
             ioException.printStackTrace();
         }
     };
+
+    public static void writeJSONtoDB(String json, String filename) throws IOException {
+        FileOutputStream fos = new FileOutputStream(filename);
+    ////   if (System.getProperty("os.name").equals("Linux"))
+            fos.write(json.getBytes());
+    ///    else
+   ////         fos.write(json.getBytes("windows-1251"));
+        fos.close();
+    } ;
 
     public void cleanAndexit(){
       //  showMessageDialog(null, "Try exit");
@@ -400,6 +416,7 @@ public class Example2 extends ModuleGUI {
                     e.printStackTrace();
                 }
                 System.out.println("Description::=>" + DescriptionText.getText());
+                ID = UUIDGen.generate();
                 RequestMessage req = new RequestMessage(ID, DescriptionText.getText(), jsonizer.JSONedRestored(restored));
                 System.out.println("\n\n\nJSON to send::" + req.JSONed);
                 req.Description = DescriptionText.getText();
@@ -423,7 +440,7 @@ public class Example2 extends ModuleGUI {
                     RequestHelp.setEnabled(true);
                 }
                 try {
-                    createFile(wait_lock);
+                    createFile(wait_lock, ID);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
