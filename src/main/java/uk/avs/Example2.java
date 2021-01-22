@@ -26,7 +26,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.U.125. Production ready. + AJAX+GUID + errors+ UNICODE";
+    public final String version = "0.U.126. Production ready. +CLEANUP";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -315,7 +315,7 @@ public class Example2 extends ModuleGUI {
         try {
             akt.send(BinaryMessage.savedToBLOB(req), urlServer);
             cleanup();
-            showMessageDialog(null, "Транзакция завершена");
+            showMessageDialog(null, "Для обновления нажмите Поиск в основной программе");
             Example2.writeJSONtoDB( jsonizer.JSONedRestored(data), jsonbtoDB);
             //    akt.terminate();
         } catch (IOException ioException) {

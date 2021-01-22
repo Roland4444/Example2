@@ -252,7 +252,7 @@ public class Editor extends ModuleGUI {
         positiontable.setValueAt(Trash.getText(), 0, 8);
         positiontable.setValueAt(Netto.getText(), 0, 9);
         positiontable.updateUI();
-        JOptionPane.showMessageDialog(null, "Для обновления нажмите Поиск в основной программе");
+    ///    JOptionPane.showMessageDialog(null, "Для обновления нажмите Поиск в основной программе");
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
         callback.call();
     }
