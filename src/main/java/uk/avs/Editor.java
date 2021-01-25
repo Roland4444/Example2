@@ -2,6 +2,7 @@ package uk.avs;
 import ch.roland.ModuleGUI;
 import uk.avs.util.Callback;
 import uk.avs.util.Checker;
+import uk.avs.util.Utils;
 
 
 import javax.swing.*;
@@ -9,6 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class Editor extends ModuleGUI {
@@ -127,6 +129,13 @@ public class Editor extends ModuleGUI {
     }
 
 
+    public static float calculateNetto(float trash, float brutto, float tara, float clogging){
+        float sub = brutto-tara-trash;
+        float percentage = (float) (clogging/100.00*sub);
+        float netto = sub-percentage;
+        return new Float(Utils.trimApply(String.valueOf(netto)));
+    };
+
     @Override
     public void preperaGUI() throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
         CommentTextPanel.add(Comment, BorderLayout.WEST);
@@ -231,11 +240,18 @@ public class Editor extends ModuleGUI {
             return false;
         };
         float trash = Float.parseFloat(Trash.getText());
-        float netto = Float.parseFloat(Netto.getText());
-        if (trash>=netto){
-            errorDescription = "Примесь больше или равна нетто!";
+        float brutto = Float.parseFloat(Brutto.getText());
+        float tara = Float.parseFloat(Tara.getText());
+        //public static float calculateNetto(float trash, float brutto, float tara, float clogging){
+        if (calculateNetto(trash, brutto, tara, clogging)<=0){
+            errorDescription = "Нетто меньше или равно 0!";
             return false;
         }
+        if (brutto<=(tara+trash)){
+            errorDescription = "брутто меньше или равно тара + примесь!";
+            return false;
+        }
+
         return true;
     };
 
@@ -246,11 +262,16 @@ public class Editor extends ModuleGUI {
         }
         positiontable.setValueAt(Comment.getText(), 0, 3);
         positiontable.setValueAt(Metal.getSelectedItem(), 0, 4);
-        positiontable.setValueAt(Brutto.getText(), 0, 5);
-        positiontable.setValueAt(Tara.getText(), 0, 6);
-        positiontable.setValueAt(Clogging.getText(), 0, 7);
-        positiontable.setValueAt(Trash.getText(), 0, 8);
-        positiontable.setValueAt(Netto.getText(), 0, 9);
+        positiontable.setValueAt(Utils.trimApply(Brutto.getText()), 0, 5);
+        positiontable.setValueAt(Utils.trimApply(Tara.getText()), 0, 6);
+        positiontable.setValueAt(Utils.trimApply(Clogging.getText()), 0, 7);
+        positiontable.setValueAt(Utils.trimApply(Trash.getText()), 0, 8);
+        float trash = Float.parseFloat(Trash.getText());
+        float clogging = Float.parseFloat(Clogging.getText());
+        float brutto = Float.parseFloat(Brutto.getText());
+        float tara = Float.parseFloat(Tara.getText());
+        float netto = Editor.calculateNetto(trash, brutto, tara, clogging);
+        positiontable.setValueAt(Utils.trimApply(String.valueOf(netto)), 0, 9);
         positiontable.updateUI();
     ///    JOptionPane.showMessageDialog(null, "Для обновления нажмите Поиск в основной программе");
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));

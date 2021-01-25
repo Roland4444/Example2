@@ -1,6 +1,8 @@
 package uk.avs.util;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 /**
  * Provide general purpose methods for handling OpenCV-JavaFX data conversion.
@@ -13,6 +15,11 @@ import java.io.File;
  */
 public final class Utils {
 
+    public static String trimApply(String input){
+        BigDecimal bd = new BigDecimal(input);
+        BigDecimal result  =  bd.setScale(2, RoundingMode.HALF_UP);
+        return String.valueOf(result);
+    };
 
     public  static void safeDelete(String filename){
         if (new File(filename).exists())

@@ -26,7 +26,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.D.126. Release. DEBUG";
+    public final String version = "0.0.0.1.F Release";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -46,6 +46,7 @@ public class Example2 extends ModuleGUI {
     public String createandsendfatbundle = "createfatbundle";
     public String createfatbundle_shortcut = "control R";
     public timeBasedUUID UUIDGen ;
+
   ///  public final String FileNameDump  = "waybill.bin";
     public final String FileNameDumpJSON  = "waybill.json";
     public final String FileBin  = "req.bin";
@@ -62,6 +63,7 @@ public class Example2 extends ModuleGUI {
     public JSONObject restored;
     public JPanel MainPanel;
     public JPanel ButtonPanel;
+    public JPanel InfoPanel;
     public JLabel lPosition;
     public JLabel lDescription;
     public JTable PositionTable;
@@ -77,14 +79,10 @@ public class Example2 extends ModuleGUI {
     public void defaultmetals() throws IOException {
         metals = new ArrayList();
         String line;
-
-
-            BufferedReader bufferreader = new BufferedReader(new FileReader("metals"));
-
-
-            while ((line = bufferreader.readLine()) != null) {
-                metals.add(line);
-            }
+        BufferedReader bufferreader = new BufferedReader(new FileReader("metals"));
+        while ((line = bufferreader.readLine()) != null) {
+            metals.add(line);
+        }
 
        /*
         metals.add("12А");
@@ -153,7 +151,7 @@ public class Example2 extends ModuleGUI {
             showMessageDialog(null, "Ошибка инициализации программы");
             System.exit(12);
         }
-        showMessageDialog(null, "URL client::"+urlClient);
+      ///  showMessageDialog(null, "URL client::"+urlClient);
         System.out.println(urlClient);
         frame = new JFrame("АВС помошник. Версия "+version);
         System.out.println("JFRAME passed!");
@@ -169,6 +167,8 @@ public class Example2 extends ModuleGUI {
         lPosition = new JLabel("Позиция:");
         lDescription = new JLabel("Опишите проблему");
         DescriptionText = new JTextArea();
+        DescriptionText.setWrapStyleWord(true);
+        DescriptionText.setLineWrap(true);
         pane = new JScrollPane(PositionTable);
         ButtonPanel = new JPanel(new BorderLayout());
         RequestHelp = new JButton("Запросить изменения");
@@ -178,7 +178,7 @@ public class Example2 extends ModuleGUI {
         Cancel = new JButton("Отмена");
         DescriptionPanel = new JPanel();
         experimentLayout = new FlowLayout();
-
+        InfoPanel = new JPanel(new BorderLayout());
         popupMenu = new JPopupMenu();
         JMenuItem menuItemAdd = new JMenuItem("Add New Row");
         JMenuItem menuItemRemove = new JMenuItem("Remove Current Row");
@@ -229,9 +229,10 @@ public class Example2 extends ModuleGUI {
 
         ButtonPanel.setLayout(experimentLayout);
         ButtonPanel.add(RequestHelp);
-        ButtonPanel.add(Cancel);
+     //   ButtonPanel.add(Cancel);
         ButtonPanel.add(SaveChanges);
         ButtonPanel.add(EditButton);
+
         SaveChanges.setVisible(false);
 
         DescriptionText.setRows(20);
@@ -239,9 +240,9 @@ public class Example2 extends ModuleGUI {
 
         contents.add(pane);
         contents.add(lDescription);
-        contents.add(DescriptionText);
+        contents.add(new JScrollPane(DescriptionText));
         contents.add(ButtonPanel);
-
+        contents.add(InfoPanel);
         frame.setContentPane(contents);
         frame.setSize(1200, 500);
         frame.setVisible(true);
@@ -318,6 +319,7 @@ public class Example2 extends ModuleGUI {
             cleanup();
             showMessageDialog(null, "Для обновления нажмите Поиск в основной программе");
             Example2.writeJSONtoDB( jsonizer.JSONedRestored(data), jsonbtoDB);
+            cleanAndexit();
             //    akt.terminate();
         } catch (IOException ioException) {
             ioException.printStackTrace();
@@ -419,6 +421,10 @@ public class Example2 extends ModuleGUI {
                 } catch (IOException | ParseException e) {
                     e.printStackTrace();
                 }
+                if (DescriptionText.getText().length()>=3000){
+                    showMessageDialog(null, "слишком длинный текст. Ограничение 3000 символов");
+                    return;
+                }
                 System.out.println("Description::=>" + DescriptionText.getText());
                 ID = UUIDGen.generate();
                 RequestMessage req = new RequestMessage(ID, DescriptionText.getText(), jsonizer.JSONedRestored(restored));
@@ -427,8 +433,8 @@ public class Example2 extends ModuleGUI {
                 req.type = RequestMessage.Type.request;
              //   showMessageDialog(null, "TRY SEND" );
                 req.addressToReply = urlClient;///////////akt.getURL_thisAktor();
-                System.out.println("ADRESS TO REPLY::"+req.addressToReply);
-                showMessageDialog(null, "Address to reply::"+req.addressToReply);
+          //////      System.out.println("ADRESS TO REPLY::"+req.addressToReply);
+             //////   showMessageDialog(null, "Address to reply::"+req.addressToReply);
                 try {
                     akt.send(BinaryMessage.savedToBLOB(req), urlServer);
                 } catch (UnknownHostException e) {
@@ -455,6 +461,10 @@ public class Example2 extends ModuleGUI {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
+                if (!new File(wait_lock).exists()) {
+                    cleanAndexit();
+                    return;
+                }
                 Utils.safeDelete(applock);
                 akt.terminate();
             }

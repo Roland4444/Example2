@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 
 import static org.junit.Assert.*;
 
@@ -16,5 +17,12 @@ public class Example2Test {
         Example2.writeJSONtoDB(initialJSON, fileTosave);
         assertEquals(true, new File(fileTosave).exists());
         new File(fileTosave).delete();
+    }
+
+    @Test
+    public void testString() throws UnsupportedEncodingException {
+        byte[] arr = "gggg".getBytes("Windows-1251");
+        String n = new String(arr);
+        assertEquals("gggg", n);
     }
 }
