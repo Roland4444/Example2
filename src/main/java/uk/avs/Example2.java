@@ -26,7 +26,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.U.126. Release";
+    public final String version = "0.D.126. Release. DEBUG";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -153,6 +153,7 @@ public class Example2 extends ModuleGUI {
             showMessageDialog(null, "Ошибка инициализации программы");
             System.exit(12);
         }
+        showMessageDialog(null, "URL client::"+urlClient);
         System.out.println(urlClient);
         frame = new JFrame("АВС помошник. Версия "+version);
         System.out.println("JFRAME passed!");
@@ -425,11 +426,9 @@ public class Example2 extends ModuleGUI {
                 req.Description = DescriptionText.getText();
                 req.type = RequestMessage.Type.request;
              //   showMessageDialog(null, "TRY SEND" );
-                try {
-                    req.addressToReply = akt.getURL_thisAktor();
-                } catch (UnknownHostException e) {
-                    RequestHelp.setEnabled(true);;
-                }
+                req.addressToReply = urlClient;///////////akt.getURL_thisAktor();
+                System.out.println("ADRESS TO REPLY::"+req.addressToReply);
+                showMessageDialog(null, "Address to reply::"+req.addressToReply);
                 try {
                     akt.send(BinaryMessage.savedToBLOB(req), urlServer);
                 } catch (UnknownHostException e) {
