@@ -73,6 +73,7 @@ public class Example2 extends ModuleGUI {
     JPopupMenu popupMenu;
     public ArrayList metals;
 
+
     FlowLayout experimentLayout;
     public Object[] columnsHeaderAVS = new String[]{"Дата", "Время", "Накладная №", "Комментарий", "Металл", "Брутто", "Тара", "Засор", "Примеси", "Нетто", "Режим", "Завершено", "Состояние"};
 
@@ -200,7 +201,7 @@ public class Example2 extends ModuleGUI {
 
     public Example2() throws IOException, InterruptedException, ParseException {
 
-        if (new File(applock).exists()){}
+        if (new File(applock).exists()){System.exit(3);}
         initComponents();
 
         FileOutputStream fos = new FileOutputStream(applock);
@@ -430,6 +431,7 @@ public class Example2 extends ModuleGUI {
                 RequestMessage req = new RequestMessage(ID, DescriptionText.getText(), jsonizer.JSONedRestored(restored));
                 System.out.println("\n\n\nJSON to send::" + req.JSONed);
                 req.Description = DescriptionText.getText();
+                System.out.println("DESCRIPTION>>\n"+DescriptionText.getText());
                 req.type = RequestMessage.Type.request;
              //   showMessageDialog(null, "TRY SEND" );
                 req.addressToReply = urlClient;///////////akt.getURL_thisAktor();
