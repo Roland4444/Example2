@@ -251,7 +251,10 @@ public class Editor extends ModuleGUI {
             errorDescription = "брутто меньше или равно тара + примесь!";
             return false;
         }
-
+        if (Comment.getText().length()>60){
+            errorDescription = "Слишком длинный комментарий. Ограничение 60 символов";
+            return false;
+        }
         return true;
     };
 
