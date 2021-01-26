@@ -26,7 +26,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.0.0.1.F Release";
+    public final String version = "0.0.0.5.F Release";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -201,7 +201,9 @@ public class Example2 extends ModuleGUI {
 
     public Example2() throws IOException, InterruptedException, ParseException {
 
-        if (new File(applock).exists()){System.exit(3);}
+        if (new File(applock).exists()){
+            System.exit(3);
+        }
         initComponents();
 
         FileOutputStream fos = new FileOutputStream(applock);
@@ -454,8 +456,10 @@ public class Example2 extends ModuleGUI {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                frame.setState(JFrame.ICONIFIED);
                 showMessageDialog(null, "запрос отправлен! ожидайте одобрения");
                 RequestHelp.setEnabled(false);
+
                 startASK();
             }
         };
@@ -478,7 +482,9 @@ public class Example2 extends ModuleGUI {
         FileOutputStream fos = new FileOutputStream(approve_lock);
         fos.write("schon".getBytes());
         fos.close();
+        frame.setState(JFrame.NORMAL);
         showMessageDialog(null, "редактирование разрешено");
+
         //new ThreadAlertApprove().start();
         checker.interrupt();
         checker.stop();

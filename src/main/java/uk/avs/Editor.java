@@ -6,6 +6,8 @@ import uk.avs.util.Utils;
 
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -52,6 +54,7 @@ public class Editor extends ModuleGUI {
     public ArrayList metals;
     public JButton saver;
     public String errorDescription;
+    public boolean loaded = false;
     public Editor(String number, String date, ArrayList data1, JButton saver){
         checker = new Checker();
         this.saver = saver;
@@ -211,6 +214,7 @@ public class Editor extends ModuleGUI {
         Trash.setText(inputdata.get(4).toString());
         Tara.setText(inputdata.get(5).toString());
         Metal.setSelectedItem(inputdata.get(6).toString());
+        loaded=true;
     };
 
     public boolean checkInput(){
@@ -281,8 +285,94 @@ public class Editor extends ModuleGUI {
         callback.call();
     }
 
+    public void recalculateNetto(){
+        if (!loaded)
+            return;
+        float trash = 0;
+        float clogging = 0;
+        float brutto = 0;
+        float tara = 0;
+        try{
+            trash = Float.parseFloat(Trash.getText());
+            clogging = Float.parseFloat(Clogging.getText());
+            brutto = Float.parseFloat(Brutto.getText());
+            tara = Float.parseFloat(Tara.getText());
+        }
+        catch (NumberFormatException e){
+
+        }
+        float netto = Editor.calculateNetto(trash, brutto, tara, clogging);
+        Netto.setText(Utils.trimApply(String.valueOf(netto)));
+        positiontable.setValueAt(Utils.trimApply(String.valueOf(netto)), 0, 9);
+        positiontable.updateUI();
+    };
+
     @Override
     public void initActions() {
+        Tara.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                recalculateNetto();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                recalculateNetto();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                recalculateNetto();
+            }
+        });
+        Trash.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                recalculateNetto();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                recalculateNetto();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                recalculateNetto();
+            }
+        });
+        Clogging.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                recalculateNetto();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                recalculateNetto();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                recalculateNetto();
+            }
+        });
+        Brutto.getDocument().addDocumentListener(new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                recalculateNetto();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                recalculateNetto();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                recalculateNetto();
+            }
+        });
         updateAction = new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent e) {
