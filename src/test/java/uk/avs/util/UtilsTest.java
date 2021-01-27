@@ -1,7 +1,9 @@
 package uk.avs.util;
 
+import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 
 import static org.junit.Assert.*;
@@ -53,4 +55,20 @@ public class UtilsTest {
 
     }
 
+    @Test
+    public void getID() throws IOException, ParseException {
+        String filename = "waybillwithid.json";
+        String fieldname = "Weighing_id";
+        assertEquals("4", Utils.getID(filename, fieldname));
+
+    }
+
+    @Test
+    public void getIDfake() throws IOException, ParseException {
+        String filename = "waybillwithoutid.json";
+        String fieldname = "Weighing_id";
+        System.out.println(Utils.getID(filename, fieldname));
+      //  assertEquals("4", Utils.getID(filename, fieldname));
+
+    }
 }

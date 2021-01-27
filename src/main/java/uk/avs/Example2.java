@@ -4,6 +4,7 @@ import abstractions.Cypher;
 import abstractions.RequestMessage;
 import ch.roland.ModuleGUI;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import uk.avs.util.*;
 import uk.avs.util.readfile.Readfile;
@@ -26,7 +27,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.0.0.5.F Release";
+    public final String version = "0.0.0.6.F Release";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -48,7 +49,7 @@ public class Example2 extends ModuleGUI {
     public timeBasedUUID UUIDGen ;
 
   ///  public final String FileNameDump  = "waybill.bin";
-    public final String FileNameDumpJSON  = "waybill.json";
+    public final static String FileNameDumpJSON  = "waybill.json";
     public final String FileBin  = "req.bin";
     public String savechanges = "saveChanges";
     public String savechanges_shortcut = "control S";
@@ -84,38 +85,7 @@ public class Example2 extends ModuleGUI {
         while ((line = bufferreader.readLine()) != null) {
             metals.add(line);
         }
-
-       /*
-        metals.add("12А");
-        metals.add("14А");
-        metals.add("16А");
-        metals.add("17А");
-        metals.add("25А");
-        metals.add("3А");
-        metals.add("5А");
-        metals.add("5АЖД");
-        metals.add("5АНn");
-        metals.add("5АЭ");
-        metals.add("АКБ ГЕЛЬ");
-        metals.add("АКБ никель-кадмиевые");
-        metals.add("АКБ ПП");
-        metals.add("АКБ ПП залитые");
-        metals.add("АКБ ЭБ");
-        metals.add("АЛЮМИНИЙ АД");
-        metals.add("Алюминий моторный");
-        metals.add("Алюминий пищевой");
-        metals.add("Алюминий хлам");
-        metals.add("Алюминий электротех");
-        metals.add("Бабит 16%");
-        metals.add("Бабит 70%");
-        metals.add("Бабит 83%");
-        metals.add("Бронза");
-        */
-
     }
-
-
-
     public void cleanup(){
         Utils.safeDelete(FileNameDumpJSON);
         Utils.safeDelete(approve_lock);
@@ -123,14 +93,6 @@ public class Example2 extends ModuleGUI {
         Utils.safeDelete(wait_lock);
         Utils.safeDelete(decline_lock);
     }
-
-    public boolean checkInitialRequest(){
-        return new File(FileNameDumpJSON).exists();
-    };
-
-    public boolean checkHaveResponce(){
-        return new File(approve_lock).exists() || new File(decline_lock).exists();
-    };
 
     public boolean waitReponce(){
         return new File(wait_lock).exists();
@@ -200,7 +162,10 @@ public class Example2 extends ModuleGUI {
     }
 
     public Example2() throws IOException, InterruptedException, ParseException {
-
+        if (Utils.getID(FileNameDumpJSON, "Weighing_id")==null){
+            showMessageDialog(null, "Неверный формат файла");
+            System.exit(5);
+        }
         if (new File(applock).exists()){
             System.exit(3);
         }
@@ -319,22 +284,29 @@ public class Example2 extends ModuleGUI {
         }
         try {
             akt.send(BinaryMessage.savedToBLOB(req), urlServer);
-            cleanup();
+
             showMessageDialog(null, "Для обновления нажмите Поиск в основной программе");
-            Example2.writeJSONtoDB( jsonizer.JSONedRestored(data), jsonbtoDB);
+            Example2.writeJSONtoDB( jsonizer.JSONedRestored(data), jsonbtoDB, Utils.getID(FileNameDumpJSON, "Weighing_id"));
+            cleanup();
             cleanAndexit();
             //    akt.terminate();
-        } catch (IOException ioException) {
+        } catch (IOException | ParseException ioException) {
             ioException.printStackTrace();
         }
     };
 
-    public static void writeJSONtoDB(String json, String filename) throws IOException {
+
+
+
+    public static void writeJSONtoDB(String json, String filename, String id) throws IOException, ParseException {
+        JSONObject obj = (JSONObject) new JSONParser().parse(json);
+        obj.put("Weighing_id", id);
         FileOutputStream fos = new FileOutputStream(filename);
-    ////    if (System.getProperty("os.name").equals("Linux"))
-            fos.write(json.getBytes("UTF-8"));
-    ///    else
-    ///        fos.write(json.getBytes("windows-1251"));
+        ////    if (System.getProperty("os.name").equals("Linux"))
+        fos.write(obj.toString().getBytes("UTF-8"));
+
+        ///    else
+        ///        fos.write(json.getBytes("windows-1251"));
         fos.close();
     } ;
 

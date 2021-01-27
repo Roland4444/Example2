@@ -1,6 +1,10 @@
 package uk.avs.util;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.ParseException;
+
 import java.io.File;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -14,6 +18,12 @@ import java.math.RoundingMode;
  * @since 1.0
  */
 public final class Utils {
+
+
+    public static String getID(String filename, String fieldname) throws IOException, ParseException {
+        JSONObject jo = WayBillUtil.restoreJSON(filename);
+        return String.valueOf(jo.get(fieldname));
+    }
 
     public static String trimApply(String input){
         BigDecimal bd = new BigDecimal(input);

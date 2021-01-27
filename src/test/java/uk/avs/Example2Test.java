@@ -1,5 +1,6 @@
 package uk.avs;
 
+import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
 import java.io.File;
@@ -10,11 +11,11 @@ import static org.junit.Assert.*;
 
 public class Example2Test {
 
-    @Test
+  ///  @Test
     public void writeJSONtoDB() throws IOException {
         String initialJSON = "{\"a\":\"12\"}";
         String fileTosave = "temp.json";
-        Example2.writeJSONtoDB(initialJSON, fileTosave);
+      ///  Example2.writeJSONtoDB(initialJSON, fileTosave);
         assertEquals(true, new File(fileTosave).exists());
         new File(fileTosave).delete();
     }
@@ -25,4 +26,15 @@ public class Example2Test {
         String n = new String(arr);
         assertEquals("gggg", n);
     }
+
+    @Test
+    public void testWriteJSONtoDB() throws IOException, ParseException {
+        String initialJSON = "{\"a\":\"12\"}";
+        String fileTosave = "temp2.json";
+        Example2.writeJSONtoDB(initialJSON, fileTosave, "3");
+        assertEquals(true, new File(fileTosave).exists());
+       // new File(fileTosave).delete();
+    }
+
+
 }
