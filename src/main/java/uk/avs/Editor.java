@@ -247,12 +247,12 @@ public class Editor extends ModuleGUI {
         float brutto = Float.parseFloat(Brutto.getText());
         float tara = Float.parseFloat(Tara.getText());
         //public static float calculateNetto(float trash, float brutto, float tara, float clogging){
-        if (calculateNetto(trash, brutto, tara, clogging)<=0){
+        if (calculateNetto(trash, brutto, tara, clogging)<0){
             errorDescription = "Нетто меньше или равно 0!";
             return false;
         }
-        if (brutto<=(tara+trash)){
-            errorDescription = "брутто меньше или равно тара + примесь!";
+        if (brutto<(tara+trash)){
+            errorDescription = "брутто меньше тара + примесь!";
             return false;
         }
         if (Comment.getText().length()>60){
