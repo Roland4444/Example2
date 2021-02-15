@@ -12,10 +12,10 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 
 public class Editor extends ModuleGUI {
+    public boolean MustDeleted = false;
     public Checker checker;
     public Callback callback;
     public JPanel CommentPanel, CommentLabelPanel, CommentTextPanel,
@@ -41,14 +41,20 @@ public class Editor extends ModuleGUI {
     public JComboBox Metal;
     public JLabel LMetal;
     public JButton UpdateComment;
+    public JCheckBox DeletePosition;
     public JPanel containerPanel;
     public JTable positiontable;
+    AbstractAction deleteAction;
     AbstractAction updateAction;
     public String updateaction = "checkaction";
+    public String deleteaction = "delete";
     JButton Save;
     public JLabel description;
     public JPanel buttonPanel;
+    public JPanel deletePanel;
     public String updateaction_shortcut = "control Z";
+    public String deleteaction_shortcut = "control D";
+
     public ArrayList inputdata;
     private String[] data1 = { "Чай" ,"Кофе"  ,"Минеральная","Морс", "Алюминий хлам"};
     public ArrayList metals;
@@ -87,6 +93,7 @@ public class Editor extends ModuleGUI {
         MetalLabelPanel = new JPanel(new BorderLayout());
         MetalItemPanel = new JPanel(new BorderLayout());
 
+        deletePanel =  new JPanel();
         buttonPanel =  new JPanel();
 
         frame = new JFrame("Накладная номер #"+ number+ " @"+ date);
@@ -118,6 +125,7 @@ public class Editor extends ModuleGUI {
 
         metals = data1;
         Save = new JButton("Сохранить");
+        DeletePosition = new JCheckBox("Удалить позицию");
      //   springLayoutPanel = new JPanel(new SpringLayout());
 
     }
@@ -177,6 +185,7 @@ public class Editor extends ModuleGUI {
         MetalPanel.add(MetalItemPanel);
 
         buttonPanel.add(Save);
+        deletePanel.add(DeletePosition);
 
         containerPanel.add(CommentPanel);
         containerPanel.add(BruttoPanel);
@@ -186,6 +195,7 @@ public class Editor extends ModuleGUI {
         containerPanel.add(TaraPanel);
         containerPanel.add(MetalPanel);
 
+        containerPanel.add(deletePanel);
         containerPanel.add(buttonPanel);
 
         frame.setContentPane(containerPanel);
@@ -203,6 +213,10 @@ public class Editor extends ModuleGUI {
         Save.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(updateaction_shortcut), updateaction);
         Save.getActionMap().put(updateaction, updateAction);
         Save.addActionListener(updateAction);
+
+        DeletePosition.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(deleteaction_shortcut), deleteaction);
+        DeletePosition.getActionMap().put(deleteaction, deleteAction);
+        DeletePosition.addActionListener(deleteAction);
 
     }
 
@@ -247,12 +261,12 @@ public class Editor extends ModuleGUI {
         float brutto = Float.parseFloat(Brutto.getText());
         float tara = Float.parseFloat(Tara.getText());
         //public static float calculateNetto(float trash, float brutto, float tara, float clogging){
-        if (calculateNetto(trash, brutto, tara, clogging)<0){
+        if (calculateNetto(trash, brutto, tara, clogging)<=0){
             errorDescription = "Нетто меньше или равно 0!";
             return false;
         }
         if (brutto<(tara+trash)){
-            errorDescription = "брутто меньше тара + примесь!";
+            errorDescription = "брутто меньше или равно тары + примесь!";
             return false;
         }
         if (Comment.getText().length()>60){
@@ -263,27 +277,57 @@ public class Editor extends ModuleGUI {
     };
 
     public void update(){
-        if (!checkInput()) {
+        if (!checkInput() && !MustDeleted) {
             JOptionPane.showMessageDialog(null, "Проверьте ввод чисел. Ошибка ::  "+errorDescription);
             return;
         }
-        positiontable.setValueAt(Comment.getText(), 0, 3);
-        positiontable.setValueAt(Metal.getSelectedItem(), 0, 4);
-        positiontable.setValueAt(Utils.trimApply(Brutto.getText()), 0, 5);
-        positiontable.setValueAt(Utils.trimApply(Tara.getText()), 0, 6);
-        positiontable.setValueAt(Utils.trimApply(Clogging.getText()), 0, 7);
-        positiontable.setValueAt(Utils.trimApply(Trash.getText()), 0, 8);
-        float trash = Float.parseFloat(Trash.getText());
-        float clogging = Float.parseFloat(Clogging.getText());
-        float brutto = Float.parseFloat(Brutto.getText());
-        float tara = Float.parseFloat(Tara.getText());
-        float netto = Editor.calculateNetto(trash, brutto, tara, clogging);
-        positiontable.setValueAt(Utils.trimApply(String.valueOf(netto)), 0, 9);
+        if (!MustDeleted) {
+            positiontable.setValueAt(Comment.getText(), 0, 3);
+            positiontable.setValueAt(Metal.getSelectedItem(), 0, 4);
+            positiontable.setValueAt(Utils.trimApply(Brutto.getText()), 0, 5);
+            positiontable.setValueAt(Utils.trimApply(Tara.getText()), 0, 6);
+            positiontable.setValueAt(Utils.trimApply(Clogging.getText()), 0, 7);
+            positiontable.setValueAt(Utils.trimApply(Trash.getText()), 0, 8);
+            float trash = Float.parseFloat(Trash.getText());
+            float clogging = Float.parseFloat(Clogging.getText());
+            float brutto = Float.parseFloat(Brutto.getText());
+            float tara = Float.parseFloat(Tara.getText());
+            float netto = Editor.calculateNetto(trash, brutto, tara, clogging);
+            positiontable.setValueAt(Utils.trimApply(String.valueOf(netto)), 0, 9);
+        }
+        if (MustDeleted)
+            nulled();
+
         positiontable.updateUI();
     ///    JOptionPane.showMessageDialog(null, "Для обновления нажмите Поиск в основной программе");
         frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
         callback.call();
     }
+
+    public void nulled(){
+        positiontable.setValueAt(Utils.trimApply("0.0"), 0, 5);
+        positiontable.setValueAt(Utils.trimApply("0.0"), 0, 6);
+        positiontable.setValueAt(Utils.trimApply("0.0"), 0, 7);
+        positiontable.setValueAt(Utils.trimApply("0.0"), 0, 8);
+        float trash = Float.parseFloat(Trash.getText());
+        float clogging = Float.parseFloat(Clogging.getText());
+        float brutto = Float.parseFloat(Brutto.getText());
+        float tara = Float.parseFloat(Tara.getText());
+        float netto = Editor.calculateNetto(trash, brutto, tara, clogging);
+        positiontable.setValueAt(Utils.trimApply("0.0"), 0, 9);
+        positiontable.updateUI();
+    };
+
+    public  void disableEdit(boolean disable){
+        boolean enabled = !disable;
+        Brutto.setEnabled(enabled);
+        Tara.setEnabled(enabled);
+        Clogging.setEnabled(enabled);
+        Trash.setEnabled(enabled);
+        Metal.setEnabled(enabled);
+        Comment.setEnabled(enabled);
+        Netto.setEnabled(enabled);
+    };
 
     public void recalculateNetto(){
         if (!loaded)
@@ -382,6 +426,18 @@ public class Editor extends ModuleGUI {
             }
         };
 
+        deleteAction = new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (DeletePosition.isSelected()){
+                    JOptionPane.showMessageDialog(null, "Позиция будет удалена!");
+                    MustDeleted = true;
+                }
+                else  MustDeleted = false;
+                disableEdit(MustDeleted);
+            }
+        };
+
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() {
             public void windowClosing(WindowEvent e) {
@@ -389,7 +445,6 @@ public class Editor extends ModuleGUI {
                 frame.setVisible(false);
             }
         });
-
         initListeners();
     }
     public static void main(String[] args) throws ClassNotFoundException, UnsupportedLookAndFeelException, InstantiationException, IllegalAccessException {
