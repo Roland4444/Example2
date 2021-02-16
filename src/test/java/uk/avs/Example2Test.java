@@ -1,7 +1,6 @@
 package uk.avs;
 
 import Message.abstractions.BinaryMessage;
-import abstractions.InfoMessage;
 import abstractions.ResponceMessage;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
@@ -40,12 +39,6 @@ public class Example2Test {
        // new File(fileTosave).delete();
     }
 
-    @Test
-    public void checkinstance(){
-        BinaryMessage resp =  new ResponceMessage();
-        BinaryMessage info = new InfoMessage();
-        assertEquals(true, info instanceof InfoMessage);
-        assertEquals(true, resp instanceof ResponceMessage);
-    }
+
 
 }
