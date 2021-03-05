@@ -4,6 +4,7 @@ import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 
 import static org.junit.Assert.*;
@@ -70,5 +71,10 @@ public class UtilsTest {
         System.out.println(Utils.getID(filename, fieldname));
       //  assertEquals("4", Utils.getID(filename, fieldname));
 
+    }
+
+    @Test
+    public void ret() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+        assertEquals(3, Utils.callret(new Utils()));
     }
 }

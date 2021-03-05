@@ -5,6 +5,8 @@ import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
@@ -34,6 +36,17 @@ public final class Utils {
     public  static void safeDelete(String filename){
         if (new File(filename).exists())
             new File(filename).delete();
+    };
+
+    public int ret(int a){
+        return 3;
+    }
+
+    public static int callret(Object obj) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        Method method = obj.getClass().getMethod("ret", int.class);
+        System.out.println("000");
+        method.setAccessible(true);
+        return (int) method.invoke(obj,0);
     };
 
 }
