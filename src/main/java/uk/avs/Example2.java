@@ -27,7 +27,7 @@ public class Example2 extends ModuleGUI {
     public ThreadCheckStatus checker;
     public OnCheckCycle checkcycle;
     public String ID="";
-    public final String version = "0.0.0.6.R7 Release";
+    public final String version = "0.0.0.6.R8 Release";
     public final String approve_lock = "ap.lock";
     public final String decline_lock = "de.lock";
     public final String applock = "app.lock";
@@ -47,6 +47,7 @@ public class Example2 extends ModuleGUI {
     public String createandsendfatbundle = "createfatbundle";
     public String createfatbundle_shortcut = "control R";
     public timeBasedUUID UUIDGen ;
+    public String pzuInfo;
 
   ///  public final String FileNameDump  = "waybill.bin";
     public final static String FileNameDumpJSON  = "waybill.json";
@@ -107,8 +108,10 @@ public class Example2 extends ModuleGUI {
         System.out.println("Metals passed!");
         jsonizer = new JSONizer();
         readfile = new Readfile("setts.ini");
+        pzuInfo= "Неизвестная площадка";
+        if  (readfile.readField("pzu")!=null)
+            pzuInfo =readfile.readField("pzu");
         urlServer = readfile.readField("urlServer");
-
         urlClient = readfile.readField("urlClient");
         if ((urlClient == null) || urlServer==null){
             showMessageDialog(null, "Ошибка инициализации программы");
@@ -401,6 +404,7 @@ public class Example2 extends ModuleGUI {
                     showMessageDialog(null, "слишком длинный текст. Ограничение 3000 символов");
                     return;
                 }
+                restored.put("pzu", pzuInfo);
                 System.out.println("Description::=>" + DescriptionText.getText());
                 ID = UUIDGen.generate();
                 RequestMessage req = new RequestMessage(ID, DescriptionText.getText(), jsonizer.JSONedRestored(restored));
